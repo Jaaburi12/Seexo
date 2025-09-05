@@ -738,7 +738,6 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            flex-shrink: 0;
         }
 
         .stat-info h3 {
@@ -809,7 +808,7 @@
         .admin-table td {
             padding: 12px;
             border-bottom: 1px solid #eee;
-            font-size: 14px;
+       font-size: 14px;
         }
 
         .admin-table tr:hover {
@@ -880,7 +879,6 @@
             display: flex;
             gap: 10px;
             align-items: center;
-            flex-wrap: wrap;
         }
 
         .filter-controls select {
@@ -1235,7 +1233,6 @@
             margin-bottom: 20px;
             border-bottom: 2px solid #ecf0f1;
             padding-bottom: 15px;
-            flex-wrap: wrap;
         }
 
         .category-btn {
@@ -1378,113 +1375,111 @@
 
         .chat-user-item:hover {
             border-color: var(--primary);
-            background: #e3f2fd;
+            transform: translateY(-2px);
         }
 
         .chat-user-item.active {
             border-color: var(--primary);
-            background: #bbdefb;
+            background: #e3f2fd;
         }
 
-        .user-name {
+        .chat-user-name {
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 5px;
         }
 
-        .user-status {
+        .chat-user-email {
             font-size: 12px;
             color: #7f8c8d;
+            margin-bottom: 5px;
         }
 
-        .user-status.online {
-            color: var(--accent);
+        .chat-user-messages {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 600;
         }
 
         .chat-conversation {
             display: flex;
             flex-direction: column;
-            padding: 15px;
             background: white;
         }
 
-        .chat-conversation-header {
-            padding-bottom: 15px;
-            margin-bottom: 15px;
+        .conversation-header {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            padding: 15px;
             border-bottom: 2px solid #ecf0f1;
         }
 
-        .chat-conversation-header h4 {
+        .conversation-header h4 {
             margin: 0;
-            color: #2c3e50;
             font-size: 16px;
         }
 
-        .chat-messages-container {
+        .conversation-messages {
             flex: 1;
+            padding: 15px;
             overflow-y: auto;
-            padding: 10px;
             background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 15px;
         }
 
-        .admin-chat-input-container {
+        .admin-chat-message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+
+        .admin-chat-message.user {
+            background: #e3f2fd;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .admin-chat-message.admin {
+            background: #fff3e0;
+            margin-right: auto;
+        }
+
+        .admin-message-content {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .admin-message-info {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+
+        .conversation-input {
             display: flex;
             gap: 10px;
-            align-items: center;
+            padding: 15px;
+            border-top: 2px solid #ecf0f1;
+            background: white;
         }
 
-        .admin-chat-input {
+        .conversation-input input {
             flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
             border-radius: 25px;
-            font-size: 14px;
             outline: none;
-            transition: border-color 0.3s ease;
+            font-size: 14px;
         }
 
-        .admin-chat-input:focus {
+        .conversation-input input:focus {
             border-color: var(--primary);
         }
 
-        .admin-send-btn {
-            background: linear-gradient(135deg, var(--primary), #2980b9);
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .admin-send-btn:hover {
-            background: linear-gradient(135deg, #2980b9, var(--primary));
-            transform: scale(1.05);
-        }
-
-        .admin-send-btn:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Responsive Design for Chat */
-        @media (max-width: 768px) {
-            .chat-management {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
-            }
-            
-            .chat-users-list {
-                border-right: none;
-                border-bottom: 2px solid #ecf0f1;
-            }
+        .empty-state {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 40px 20px;
         }
     </style>
 </head>
@@ -1493,76 +1488,109 @@
     <div class="splash-screen" id="splashScreen">
         <div class="splash-logo">
             <div class="logo-icon">
-                <i class="fas fa-hands-helping"></i>
+                <i class="fas fa-globe-africa"></i>
             </div>
             <h1>Ethiopian Services Hub</h1>
-            <p>Your one-stop platform for all services in Ethiopia</p>
+            <p>Welcome to Ethiopian Services - Hospitals, Shops, and Flights</p>
         </div>
+
         <div class="auth-container">
             <div class="auth-tabs">
-                <button class="auth-tab active" id="loginTab">Login</button>
-                <button class="auth-tab" id="registerTab">Register</button>
+                <button class="auth-tab active" data-tab="login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="auth-tab" data-tab="register">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
             </div>
+
+            <!-- Login Form -->
             <form class="auth-form active" id="loginForm">
                 <div class="form-group">
-                    <label for="loginEmail">Email</label>
+                    <label for="loginEmail">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
                     <input type="email" id="loginEmail" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">Password</label>
+                    <label for="loginPassword">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
                     <input type="password" id="loginPassword" placeholder="Enter your password" required>
                 </div>
-                <button type="submit" class="btn">Login</button>
-                <div class="admin-login-link">
-                    <button type="button" class="admin-link-btn" id="adminLoginBtn">
-                        <i class="fas fa-lock"></i> Admin Login
-                    </button>
-                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
             </form>
+
+            <!-- Register Form -->
             <form class="auth-form" id="registerForm">
                 <div class="form-group">
-                    <label for="registerName">Full Name</label>
+                    <label for="registerName">
+                        <i class="fas fa-user"></i> Full Name
+                    </label>
                     <input type="text" id="registerName" placeholder="Enter your full name" required>
                 </div>
                 <div class="form-group">
-                    <label for="registerEmail">Email</label>
+                    <label for="registerEmail">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
                     <input type="email" id="registerEmail" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
-                    <label for="registerPhone">Phone Number</label>
+                    <label for="registerPhone">
+                        <i class="fas fa-phone"></i> Phone Number
+                    </label>
                     <input type="tel" id="registerPhone" placeholder="Enter your phone number" required>
                 </div>
                 <div class="form-group">
-                    <label for="registerPassword">Password</label>
+                    <label for="registerPassword">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
                     <input type="password" id="registerPassword" placeholder="Create a password" required>
                 </div>
-                <button type="submit" class="btn btn-secondary">Register</button>
+                <div class="form-group">
+                    <label for="confirmPassword">
+                        <i class="fas fa-lock"></i> Confirm Password
+                    </label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
             </form>
+            
+            <!-- Admin Login Link -->
+            <div class="admin-login-link">
+                <button class="admin-link-btn" id="adminLoginBtn">
+                    <i class="fas fa-shield-halved"></i> Admin Login
+                </button>
+            </div>
         </div>
     </div>
-
-    <!-- Services Page -->
+<!-- Services Page -->
     <div class="services-page" id="servicesPage">
         <header class="header">
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">
-                        <i class="fas fa-hands-helping"></i>
+                        <i class="fas fa-globe-africa"></i>
                     </div>
                     <div class="logo-text">
                         <h1>Ethiopian Services Hub</h1>
-                        <p>Your one-stop platform for all services</p>
+                        <p>Ethiopian Services</p>
                     </div>
-                </div>
-                <div class="nav-tabs">
-                    <button class="nav-tab active" data-panel="services">Services</button>
-                    <button class="nav-tab" data-panel="bookings">My Bookings</button>
-                    <button class="nav-tab" data-panel="admin">Admin Panel</button>
                 </div>
                 <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+                    <div class="nav-tabs" id="mainNavTabs" style="display: none;">
+                        <button class="nav-tab active" data-target="userPanel">
+                            <i class="fas fa-user"></i> User Panel
+                        </button>
+                        <button class="nav-tab" data-target="adminPanel" id="adminNavTab" style="display: none;">
+                            <i class="fas fa-shield-halved"></i> Admin Panel
+                        </button>
                     </div>
+                    <div class="user-avatar" id="userAvatar">U</div>
                     <span id="userName">User</span>
                     <button class="logout-btn" id="logoutBtn">
                         <i class="fas fa-sign-out-alt"></i> Logout
@@ -1571,119 +1599,60 @@
             </div>
         </header>
 
-        <div class="panel-content active" id="servicesPanel">
-            <div class="hero">
-                <h2>Welcome to Ethiopian Services Hub</h2>
-                <p>Discover and book services from across Ethiopia with ease</p>
-            </div>
-            <div class="services-container">
+        <div class="hero">
+            <h2>Welcome to Services</h2>
+            <p>Choose the service you want and make a booking</p>
+        </div>
+
+        <div class="services-container">
+            <!-- User Panel -->
+            <div id="userPanel" class="panel-content active">
                 <div class="services-grid">
-                    <div class="service-card" data-service="Tour Guide">
-                        <i class="fas fa-hiking service-icon"></i>
-                        <h3>Tour Guide</h3>
-                        <p>Professional tour guides to help you explore Ethiopia's rich cultural heritage and natural beauty.</p>
+                    <div class="service-card" data-service="hospital" onclick="openHospitalChat()">
+                        <i class="fas fa-hospital service-icon"></i>
+                        <h3>Hospitals</h3>
+                        <p>Book doctors and hospitals. Get quality healthcare services.</p>
                         <div class="service-link">
-                            <i class="fas fa-info-circle"></i> Click to book a tour guide
+                            <i class="fas fa-comments"></i> Chat with a doctor
                         </div>
                     </div>
-                    <div class="service-card" data-service="Car Rental">
-                        <i class="fas fa-car service-icon"></i>
-                        <h3>Car Rental</h3>
-                        <p>Rent reliable vehicles with drivers for your transportation needs across cities and regions.</p>
+
+                    <div class="service-card" data-service="store" onclick="openMiniShops()">
+                        <i class="fas fa-shopping-cart service-icon"></i>
+                        <h3>Shops</h3>
+                        <p>Shop from various stores. Get what you need in one place.</p>
                         <div class="service-link">
-                            <i class="fas fa-info-circle"></i> Click to rent a vehicle
+                            <i class="fas fa-store"></i> Open Shops
                         </div>
                     </div>
-                    <div class="service-card" data-service="Hotel Booking">
-                        <i class="fas fa-hotel service-icon"></i>
-                        <h3>Hotel Booking</h3>
-                        <p>Find and book accommodations from budget-friendly to luxury hotels throughout Ethiopia.</p>
+
+                    <div class="service-card" data-service="flights" onclick="window.open('https://www.ethiopianairlines.com/et', '_blank')">
+                        <i class="fas fa-plane service-icon"></i>
+                        <h3>Flights</h3>
+                        <p>Book domestic flights. Safe and comfortable travel.</p>
                         <div class="service-link">
-                            <i class="fas fa-info-circle"></i> Click to book a hotel
-                        </div>
-                    </div>
-                    <div class="service-card" data-service="Event Planning">
-                        <i class="fas fa-calendar-check service-icon"></i>
-                        <h3>Event Planning</h3>
-                        <p>Professional event planners to help organize weddings, conferences, and special occasions.</p>
-                        <div class="service-link">
-                            <i class="fas fa-info-circle"></i> Click to plan an event
-                        </div>
-                    </div>
-                    <div class="service-card" data-service="Restaurant Reservation">
-                        <i class="fas fa-utensils service-icon"></i>
-                        <h3>Restaurant Reservation</h3>
-                        <p>Reserve tables at the best restaurants serving traditional Ethiopian cuisine and international dishes.</p>
-                        <div class="service-link">
-                            <i class="fas fa-info-circle"></i> Click to make a reservation
-                        </div>
-                    </div>
-                    <div class="service-card" data-service="Shopping Assistant">
-                        <i class="fas fa-shopping-bag service-icon"></i>
-                        <h3>Shopping Assistant</h3>
-                        <p>Get help shopping for traditional crafts, clothing, and souvenirs from local markets.</p>
-                        <div class="service-link">
-                            <i class="fas fa-info-circle"></i> Click to get shopping help
+                            <i class="fas fa-external-link-alt"></i> Visit Website
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="panel-content" id="bookingsPanel">
-            <div class="services-container">
-                <div class="bookings-section">
-                    <h3>My Bookings</h3>
-                    <div id="bookingsList">
-                        <div class="booking-card">
-                            <div class="booking-header">
-                                <h4>Tour Guide - Lalibela</h4>
-                                <span class="booking-status confirmed">Confirmed</span>
-                            </div>
-                            <div class="booking-details">
-                                <p><i class="fas fa-calendar"></i> Date: October 15, 2023</p>
-                                <p><i class="fas fa-clock"></i> Time: 9:00 AM - 5:00 PM</p>
-                                <p><i class="fas fa-user"></i> Guide: Alemayehu M.</p>
-                                <p><i class="fas fa-money-bill-wave"></i> Price: $45.00</p>
-                            </div>
-                            <div class="booking-actions">
-                                <button class="btn-small">View Details</button>
-                                <button class="btn-small">Cancel Booking</button>
-                            </div>
-                        </div>
-                        <div class="booking-card">
-                            <div class="booking-header">
-                                <h4>Car Rental - Addis Ababa</h4>
-                                <span class="booking-status pending">Pending</span>
-                            </div>
-                            <div class="booking-details">
-                                <p><i class="fas fa-calendar"></i> Date: October 20-25, 2023</p>
-                                <p><i class="fas fa-car"></i> Vehicle: Toyota Land Cruiser</p>
-                                <p><i class="fas fa-user"></i> Driver: Mesfin T.</p>
-                                <p><i class="fas fa-money-bill-wave"></i> Price: $320.00</p>
-                            </div>
-                            <div class="booking-actions">
-                                <button class="btn-small">View Details</button>
-                                <button class="btn-small">Cancel Booking</button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- User Bookings Section -->
+                <div class="bookings-section" id="userBookings">
+                    <h3><i class="fas fa-calendar-check"></i> Your Bookings</h3>
+                    <div id="bookingsList" class="empty-bookings">No bookings made yet</div>
                 </div>
             </div>
-        </div>
 
-        <div class="panel-content" id="adminPanel">
-            <div class="services-container">
+            <!-- Admin Panel -->
+            <div id="adminPanel" class="panel-content">
                 <div class="admin-dashboard">
-                    <h2 style="color: var(--primary); margin-bottom: 30px;">Admin Dashboard</h2>
-                    
                     <div class="admin-stats">
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <i class="fas fa-users"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>1,248</h3>
+                                <h3 id="totalUsers">0</h3>
                                 <p>Total Users</p>
                             </div>
                         </div>
@@ -1692,26 +1661,17 @@
                                 <i class="fas fa-calendar-check"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>356</h3>
-                                <p>Bookings Today</p>
+                                <h3 id="totalBookings">0</h3>
+                                <p>Total Bookings</p>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon">
-                                <i class="fas fa-hands-helping"></i>
+                                <i class="fas fa-chart-line"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>42</h3>
-                                <p>Active Services</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-comment-dots"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>78</h3>
-                                <p>Pending Messages</p>
+                                <h3 id="todayBookings">0</h3>
+                                <p>Today's Bookings</p>
                             </div>
                         </div>
                     </div>
@@ -1719,146 +1679,109 @@
                     <div class="admin-sections">
                         <div class="admin-section">
                             <div class="section-header">
-                                <h3>User Management</h3>
-                                <div class="filter-controls">
-                                    <select>
-                                        <option>All Users</option>
-                                        <option>Admins</option>
-                                        <option>Customers</option>
-                                    </select>
-                                </div>
+                                <h3><i class="fas fa-users"></i> User Management</h3>
+                                <button class="btn btn-small" id="addUserBtn">
+                                    <i class="fas fa-plus"></i> Add User
+                                </button>
                             </div>
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Abebe Bekele</td>
-                                        <td>abebe@example.com</td>
-                                        <td><span class="role-badge user">User</span></td>
-                                        <td class="action-buttons">
-                                            <button class="btn-action btn-edit">Edit</button>
-                                            <button class="btn-action btn-delete">Delete</button>
-                                            </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Admin User</td>
-                                        <td>admin@ethioservices.com</td>
-                                        <td><span class="role-badge admin">Admin</span></td>
-                                        <td class="action-buttons">
-                                            <button class="btn-action btn-edit">Edit</button>
-                                            <button class="btn-action btn-delete">Delete</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Selamawit Mulu</td>
-                                        <td>selam@example.com</td>
-                                        <td><span class="role-badge user">User</span></td>
-                                        <td class="action-buttons">
-                                            <button class="btn-action btn-edit">Edit</button>
-                                            <button class="btn-action btn-delete">Delete</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="users-table-container">
+                                <table class="admin-table" id="usersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Role</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div class="admin-section">
                             <div class="section-header">
-                                <h3>Booking Requests</h3>
+                                <h3><i class="fas fa-calendar-alt"></i> Booking Management</h3>
                                 <div class="filter-controls">
-                                    <select>
-                                        <option>All Bookings</option>
-                                        <option>Pending</option>
-                                        <option>Confirmed</option>
-                                        <option>Cancelled</option>
+                                    <select id="bookingFilter">
+                                        <option value="all">All</option>
+                                        <option value="confirmed">Confirmed</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="cancelled">Cancelled</option>
                                     </select>
                                 </div>
                             </div>
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Service</th>
-                                        <th>Customer</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Tour Guide</td>
-                                        <td>Abebe Bekele</td>
-                                        <td>15 Oct 2023</td>
-                                        <td><span class="booking-status confirmed">Confirmed</span></td>
-                                        <td class="action-buttons">
-                                            <button class="btn-action btn-edit">View</button>
-                                            <button class="btn-action btn-delete">Cancel</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Car Rental</td>
-                                        <td>Selamawit Mulu</td>
-                                        <td>20 Oct 2023</td>
-                                        <td><span class="booking-status pending">Pending</span></td>
-                                        <td class="action-buttons">
-                                            <button class="btn-action btn-approve">Approve</button>
-                                            <button class="btn-action btn-delete">Reject</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="bookings-table-container">
+                                <table class="admin-table" id="bookingsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Service</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bookingsTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div class="admin-section">
                             <div class="section-header">
-                                <h3>Chat Management</h3>
+                                <h3><i class="fas fa-cog"></i> Website Settings</h3>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label for="siteName">Website Name:</label>
+                                    <input type="text" id="siteName" value="Ethiopian Services Hub">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="siteDescription">Description:</label>
+                                    <textarea id="siteDescription" rows="3">Welcome to Ethiopian Services - Hospitals, Shops, and Flights</textarea>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="maintenanceMode">Maintenance Mode:</label>
+                                    <input type="checkbox" id="maintenanceMode">
+                                    <span>Close website for maintenance</span>
+                                </div>
+                                <div class="setting-item">
+                                    <button class="btn" id="saveSettingsBtn">
+                                        <i class="fas fa-save"></i> Save Settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-comments"></i> Chat Management</h3>
+                                <button class="btn btn-small" id="refreshChatBtn">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
                             </div>
                             <div class="chat-management">
                                 <div class="chat-users-list">
-                                    <h4>Active Users</h4>
-                                    <div class="users-list">
-                                        <div class="chat-user-item active">
-                                            <div class="user-name">Abebe Bekele</div>
-                                            <div class="user-status online">Online</div>
-                                        </div>
-                                        <div class="chat-user-item">
-                                            <div class="user-name">Selamawit Mulu</div>
-                                            <div class="user-status">Offline</div>
-                                        </div>
-                                        <div class="chat-user-item">
-                                            <div class="user-name">Dawit Alemayehu</div>
-                                            <div class="user-status online">Online</div>
-                                        </div>
+                                    <h4>Chat Users</h4>
+                                    <div id="chatUsersList" class="users-list">
+                                        <div class="empty-state">No messages yet</div>
                                     </div>
                                 </div>
                                 <div class="chat-conversation">
-                                    <div class="chat-conversation-header">
-                                        <h4>Conversation with Abebe Bekele</h4>
+                                    <div class="conversation-header">
+                                        <h4 id="selectedUserName">Select a user to chat with</h4>
                                     </div>
-                                    <div class="chat-messages-container">
-                                        <div class="chat-message user">
-                                            <div class="message-text">Hello, I need help with my tour booking.</div>
-                                            <div class="message-info">Abebe Bekele, 10:30 AM</div>
-                                        </div>
-                                        <div class="chat-message admin">
-                                            <div class="message-text">Hello Abebe, I'd be happy to help. What seems to be the issue?</div>
-                                            <div class="message-info">You, 10:32 AM</div>
-                                        </div>
-                                        <div class="chat-message user">
-                                            <div class="message-text">I booked a tour guide for Lalibela but haven't received a confirmation email yet.</div>
-                                            <div class="message-info">Abebe Bekele, 10:33 AM</div>
-                                        </div>
+                                    <div class="conversation-messages" id="adminChatMessages">
+                                        <div class="empty-state">Select a user to view messages</div>
                                     </div>
-                                    <div class="admin-chat-input-container">
-                                        <input type="text" class="admin-chat-input" placeholder="Type your message...">
-                                        <button class="admin-send-btn">
+                                    <div class="conversation-input" id="adminChatInput" style="display: none;">
+                                        <input type="text" id="adminReplyInput" placeholder="Type your reply...">
+                                        <button id="sendAdminReply" class="send-btn">
                                             <i class="fas fa-paper-plane"></i>
                                         </button>
                                     </div>
@@ -1874,84 +1797,50 @@
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
-    <!-- Service Booking Modal -->
-    <div class="modal-backdrop" id="bookingModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Book <span id="serviceName">Service</span></h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form class="booking-form">
-                    <div class="form-group">
-                        <label for="bookingDate">Date</label>
-                        <input type="date" id="bookingDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookingTime">Time</label>
-                        <input type="time" id="bookingTime" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookingDuration">Duration (hours)</label>
-                        <input type="number" id="bookingDuration" min="1" max="12" value="2" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bookingNotes">Special Requests</label>
-                        <textarea id="bookingNotes" placeholder="Any special requests or notes..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" id="confirmBooking">Confirm Booking</button>
-                <button class="btn" style="background: #95a5a6;" id="cancelBooking">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Admin Login Modal -->
-    <div class="modal-backdrop" id="adminLoginModal">
+    <div class="modal-backdrop" id="adminLoginModal" style="display: none;">
         <div class="modal admin-modal">
             <div class="modal-header">
-                <h3>Admin Login</h3>
-                <button class="close-modal">&times;</button>
+                <h3><i class="fas fa-shield-halved"></i> Admin Login</h3>
+                <button class="close-modal" id="closeAdminModal">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="adminLoginForm">
                     <div class="form-group">
-                        <label for="adminUsername">Username</label>
-                        <input type="text" id="adminUsername" placeholder="Admin username" required>
+                        <label for="adminEmail">
+                            <i class="fas fa-envelope"></i> Admin Email
+                        </label>
+                        <input type="email" id="adminEmail" placeholder="Enter admin email" required>
                     </div>
                     <div class="form-group">
-                        <label for="adminPassword">Password</label>
-                        <input type="password" id="adminPassword" placeholder="Admin password" required>
+                        <label for="adminPassword">
+                            <i class="fas fa-lock"></i> Admin Password
+                        </label>
+                        <input type="password" id="adminPassword" placeholder="Enter admin password" required>
                     </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-sign-in-alt"></i> Admin Login
+                    </button>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" id="confirmAdminLogin">Login</button>
-                <button class="btn" style="background: #95a5a6;" id="cancelAdminLogin">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Chat Modal -->
-    <div class="modal-backdrop" id="chatModal">
+    <!-- Hospital Chat Modal -->
+    <div class="modal-backdrop" id="hospitalChatModal" style="display: none;">
         <div class="modal chat-modal">
             <div class="modal-header">
-                <h3>Chat with Support</h3>
-                <button class="close-modal">&times;</button>
+                <h3><i class="fas fa-comments"></i> Hospital Chat - Chat with a Doctor</h3>
+                <button class="close-modal" id="closeChatModal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
-                        <div class="chat-message system">
-                            <div class="message-text">Welcome to Ethiopian Services Hub support. How can we help you today?</div>
-                            <div class="message-info">System, Just now</div>
-                        </div>
+                        <!-- Chat messages will be displayed here -->
                     </div>
                     <div class="chat-input-container">
-                        <input type="text" id="chatInput" placeholder="Type your message...">
-                        <button class="send-btn" id="sendMessageBtn">
+                        <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500">
+                        <button id="sendChatBtn" class="send-btn">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -1960,298 +1849,1196 @@
         </div>
     </div>
 
+    <!-- Mini Shops Modal -->
+    <div class="modal-backdrop" id="miniShopsModal" style="display: none;">
+        <div class="modal shops-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-store"></i> Mini Shops - Choose what you want</h3>
+                <button class="close-modal" id="closeShopsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="shops-container">
+                    <div class="shop-categories">
+                        <button class="category-btn active" data-category="clothes">
+                            <i class="fas fa-tshirt"></i> Clothes
+                        </button>
+                        <button class="category-btn" data-category="shoes">
+                            <i class="fas fa-shoe-prints"></i> Shoes
+                        </button>
+                        <button class="category-btn" data-category="food">
+                            <i class="fas fa-utensils"></i> Food
+                        </button>
+                    </div>
+                    <div class="shop-items" id="shopItems">
+                        <!-- Shop items will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // DOM Elements
+        // User data storage
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        
+        // Initialize admin user if not exists
+        if (users.length === 0 || !users.find(u => u.role === 'admin')) {
+            const adminUser = {
+                id: 1,
+                name: 'Admin User',
+                email: 'admin@Tawwacom.com',
+                phone: '+251911000000',
+                password: 'Calicabdiabiib123',
+                role: 'admin',
+                registeredAt: new Date().toISOString()
+            };
+            
+            // Remove any existing admin and add the new one
+            users = users.filter(u => u.role !== 'admin');
+            users.unshift(adminUser);
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        // Chat Functions
+        function openHospitalChat() {
+            if (!currentUser) {
+                showNotification('Please login first to chat with a doctor', true);
+                return;
+            }
+            
+            const chatModal = document.getElementById('hospitalChatModal');
+            chatModal.style.display = 'grid';
+            loadChatMessages();
+        }
+
+        function loadChatMessages() {
+            const chatMessagesContainer = document.getElementById('chatMessages');
+            const userChatMessages = chatMessages.filter(msg => 
+                msg.userId === currentUser.id || msg.type === 'admin_broadcast'
+            );
+
+            if (userChatMessages.length === 0) {
+                chatMessagesContainer.innerHTML = `
+                    <div class="chat-empty">
+                        <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No messages yet. Start the conversation!</p>
+                    </div>
+                `;
+            } else {
+                chatMessagesContainer.innerHTML = userChatMessages.map(msg => `
+                    <div class="chat-message ${msg.sender}">
+                        <div class="message-content">${msg.message}</div>
+                        <div class="message-info">
+                            ${msg.senderName} - ${new Date(msg.timestamp).toLocaleString('en-US')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Scroll to bottom
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+
+        function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+
+            if (!message) return;
+
+            const newMessage = {
+                id: Date.now(),
+                userId: currentUser.id,
+                sender: 'user',
+                senderName: currentUser.name,
+                message: message,
+                timestamp: new Date().toISOString(),
+                type: 'user_message'
+            };
+
+            chatMessages.push(newMessage);
+            localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+
+            // Clear input
+            chatInput.value = '';
+
+            // Reload messages
+            loadChatMessages();
+
+            // Show notification that message was sent
+            showNotification('Your message has been sent to the doctor!');
+            
+            // Simulate admin response after a delay
+            setTimeout(() => {
+                const adminResponse = {
+                    id: Date.now(),
+                    userId: currentUser.id,
+                    sender: 'admin',
+                    senderName: 'Doctor',
+                    message: 'Thank you for your message. How can I assist you today?',
+                    timestamp: new Date().toISOString(),
+                    type: 'admin_response'
+                };
+                
+                chatMessages.push(adminResponse);
+                localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+                loadChatMessages();
+                
+                showNotification('You received a new message from the doctor');
+            }, 2000);
+        }
+
+        // Mini Shops Data
+        const shopItems = {
+            clothes: [
+                { id: 1, name: "Men's Shirt", price: '500 Birr', icon: 'fas fa-tshirt', description: 'Beautiful shirt specially for men' },
+                { id: 2, name: "Women's Pants", price: '800 Birr', icon: 'fas fa-female', description: 'Modern pants that look beautiful on women' },
+                      { id: 3, name: 'Warm Jacket', price: '1200 Birr', icon: 'fas fa-user-tie', description: 'Warm jacket to wear in cold weather' },
+                { id: 4, name: 'Somali Guntiino', price: '600 Birr', icon: 'fas fa-user-circle', description: 'Beautiful traditional Guntiino' },
+                { id: 5, name: "Men's Khamiis", price: '400 Birr', icon: 'fas fa-male', description: 'Regular Khamiis worn daily' },
+                { id: 6, name: "Women's Dirac", price: '1500 Birr', icon: 'fas fa-crown', description: 'Beautiful Dirac worn at ceremonies' }
+            ],
+            shoes: [
+                { id: 7, name: 'Sports Shoes', price: '300 Birr', icon: 'fas fa-running', description: 'Shoes for sports and walking' },
+                { id: 8, name: 'Work Shoes', price: '700 Birr', icon: 'fas fa-briefcase', description: 'Formal shoes worn at work' },
+                { id: 9, name: 'Summer Sandals', price: '200 Birr', icon: 'fas fa-shoe-prints', description: 'Light sandals worn in summer' },
+                { id: 10, name: "Women's Shoes", price: '900 Birr', icon: 'fas fa-high-heel', description: 'Beautiful shoes specially for women' },
+                { id: 11, name: "Children's Shoes", price: '250 Birr', icon: 'fas fa-child', description: 'Small shoes that look beautiful on children' },
+                { id: 12, name: 'Water Shoes', price: '150 Birr', icon: 'fas fa-swimmer', description: 'Shoes used in water and beaches' }
+            ],
+            food: [
+                { id: 13, name: 'Rice and Meat', price: '80 Birr', icon: 'fas fa-drumstick-bite', description: 'Delicious rice and cooked meat' },
+                { id: 14, name: 'Pasta with Sauce', price: '60 Birr', icon: 'fas fa-utensils', description: 'Italian pasta with sauce' },
+                { id: 15, name: 'Bread and Tea', price: '25 Birr', icon: 'fas fa-bread-slice', description: 'Hot bread and sweet tea' },
+                { id: 16, name: 'Samosa', price: '15 Birr', icon: 'fas fa-cookie-bite', description: 'Sweet samosa with meat' },
+                { id: 17, name: 'Milk and Banana', price: '30 Birr', icon: 'fas fa-glass-whiskey', description: 'Natural milk and sweet banana' },
+                { id: 18, name: 'Full Breakfast', price: '120 Birr', icon: 'fas fa-egg', description: 'Full breakfast with eggs and bread' }
+            ]
+        };
+
+        // Mini Shops Functions
+        function openMiniShops() {
+            if (!currentUser) {
+                showNotification('Please login first to shop', true);
+                return;
+            }
+            
+            const shopsModal = document.getElementById('miniShopsModal');
+            shopsModal.style.display = 'grid';
+            displayShopItems('clothes'); // Default to clothes
+        }
+
+        function displayShopItems(category) {
+            const shopItemsContainer = document.getElementById('shopItems');
+            const items = shopItems[category] || [];
+
+            shopItemsContainer.innerHTML = items.map(item => `
+                <div class="shop-item" onclick="addToCart(${item.id}, '${category}')">
+                    <div class="item-image">
+                        <i class="${item.icon}"></i>
+                    </div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">${item.price}</div>
+                    <div class="item-description">${item.description}</div>
+                    <button class="add-to-cart-btn" onclick="event.stopPropagation(); addToCart(${item.id}, '${category}')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(itemId, category) {
+            const item = shopItems[category].find(i => i.id === itemId);
+            if (item) {
+                showNotification(`${item.name} has been added to your cart!`);
+                // Here you could add cart functionality
+            }
+        }
+
+        // DOM elements
         const splashScreen = document.getElementById('splashScreen');
         const servicesPage = document.getElementById('servicesPage');
-        const loginTab = document.getElementById('loginTab');
-        const registerTab = document.getElementById('registerTab');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
-        const notification = document.getElementById('notification');
-        const bookingModal = document.getElementById('bookingModal');
-        const serviceNameElement = document.getElementById('serviceName');
-        const confirmBookingBtn = document.getElementById('confirmBooking');
-        const cancelBookingBtn = document.getElementById('cancelBooking');
-        const adminLoginBtn = document.getElementById('adminLoginBtn');
-        const adminLoginModal = document.getElementById('adminLoginModal');
-        const confirmAdminLogin = document.getElementById('confirmAdminLogin');
-        const cancelAdminLogin = document.getElementById('cancelAdminLogin');
         const logoutBtn = document.getElementById('logoutBtn');
-        const userNameElement = document.getElementById('userName');
-        const navTabs = document.querySelectorAll('.nav-tab');
-        const panelContents = document.querySelectorAll('.panel-content');
-        const serviceCards = document.querySelectorAll('.service-card');
-        const chatModal = document.getElementById('chatModal');
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const notification = document.getElementById('notification');
 
-        // Sample user data
-        let currentUser = null;
-        let selectedService = null;
+        // Initialize app
+        function initializeApp() {
+            // Check if user is logged in
+            if (currentUser) {
+                showServicesPage();
+            }
+            
+            // Load website settings
+            loadWebsiteSettings();
+        }
 
-        // Show notification function
+        // Display user bookings
+        function displayUserBookings() {
+            if (!currentUser) return;
+            
+            const userBookings = bookings.filter(booking => booking.userId === currentUser.id);
+            const bookingsList = document.getElementById('bookingsList');
+            
+            if (userBookings.length === 0) {
+                bookingsList.innerHTML = '<div class="empty-bookings">No bookings made yet</div>';
+                return;
+            }
+            
+            bookingsList.innerHTML = userBookings.map(booking => `
+                <div class="booking-item">
+                    <div class="booking-header">
+                        <h4>${booking.serviceName}</h4>
+                        <span class="booking-status ${booking.status}">
+                            ${booking.status === 'confirmed' ? 'CONFIRMED' : 
+                              booking.status === 'pending' ? 'PENDING' : 'CANCELLED'}
+                        </span>
+                    </div>
+                    <div class="booking-details">
+                        <p><i class="fas fa-calendar"></i> ${booking.date}</p>
+                        <p><i class="fas fa-clock"></i> ${booking.time}</p>
+                        <p><i class="fas fa-comment"></i> ${booking.notes}</p>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn-action btn-delete" onclick="cancelBooking(${booking.id})">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cancel booking function
+        function cancelBooking(bookingId) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                let allBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+                const bookingIndex = allBookings.findIndex(b => b.id === bookingId);
+                
+                if (bookingIndex !== -1) {
+                    allBookings[bookingIndex].status = 'cancelled';
+                    localStorage.setItem('bookings', JSON.stringify(bookings));
+                    bookings = allBookings; // Update local array
+                    
+                    showNotification('Your booking has been cancelled');
+                    displayUserBookings();
+                }
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navigation tabs event listeners
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-target');
+                    switchPanel(target);
+                });
+            });
+
+            // Admin panel event listeners
+            const addUserBtn = document.getElementById('addUserBtn');
+            if (addUserBtn) {
+                addUserBtn.addEventListener('click', addNewUser);
+            }
+
+            const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+            if (saveSettingsBtn) {
+                saveSettingsBtn.addEventListener('click', saveWebsiteSettings);
+            }
+
+            const bookingFilter = document.getElementById('bookingFilter');
+            if (bookingFilter) {
+                bookingFilter.addEventListener('change', (e) => {
+                    filterBookings(e.target.value);
+                });
+            }
+
+            // Admin login modal event listeners
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            const adminLoginModal = document.getElementById('adminLoginModal');
+            const closeAdminModal = document.getElementById('closeAdminModal');
+            const adminLoginForm = document.getElementById('adminLoginForm');
+
+            if (adminLoginBtn) {
+                adminLoginBtn.addEventListener('click', () => {
+                    adminLoginModal.style.display = 'grid';
+                });
+            }
+
+            if (closeAdminModal) {
+                closeAdminModal.addEventListener('click', () => {
+                    adminLoginModal.style.display = 'none';
+                    adminLoginForm.reset();
+                });
+            }
+
+            // Close modal when clicking outside
+            if (adminLoginModal) {
+                adminLoginModal.addEventListener('click', (e) => {
+                    if (e.target === adminLoginModal) {
+                        adminLoginModal.style.display = 'none';
+                        adminLoginForm.reset();
+                    }
+                });
+            }
+
+            // Chat modal event listeners
+            const hospitalChatModal = document.getElementById('hospitalChatModal');
+            const closeChatModal = document.getElementById('closeChatModal');
+            const chatInput = document.getElementById('chatInput');
+            const sendChatBtn = document.getElementById('sendChatBtn');
+
+            if (closeChatModal) {
+                closeChatModal.addEventListener('click', () => {
+                    hospitalChatModal.style.display = 'none';
+                });
+            }
+
+            if (hospitalChatModal) {
+                hospitalChatModal.addEventListener('click', (e) => {
+                    if (e.target === hospitalChatModal) {
+                        hospitalChatModal.style.display = 'none';
+                    }
+                });
+            }
+
+            if (sendChatBtn) {
+                sendChatBtn.addEventListener('click', sendChatMessage);
+            }
+
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
+
+            // Mini Shops modal event listeners
+            const miniShopsModal = document.getElementById('miniShopsModal');
+            const closeShopsModal = document.getElementById('closeShopsModal');
+            const categoryBtns = document.querySelectorAll('.category-btn');
+
+            if (closeShopsModal) {
+                closeShopsModal.addEventListener('click', () => {
+                    miniShopsModal.style.display = 'none';
+                });
+            }
+
+            if (miniShopsModal) {
+                miniShopsModal.addEventListener('click', (e) => {
+                    if (e.target === miniShopsModal) {
+                        miniShopsModal.style.display = 'none';
+                    }
+                });
+            }
+
+            // Category buttons event listeners
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-btn')) {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.category-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    e.target.classList.add('active');
+                    
+                    // Display items for selected category
+                    const category = e.target.getAttribute('data-category');
+                    displayShopItems(category);
+                }
+            });
+
+            // Admin login form submission
+            if (adminLoginForm) {
+                adminLoginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    handleAdminLogin();
+                });
+            }
+
+            // Logout button event listener
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+
+            // Initialize the application
+            initializeApp();
+        });
+
+        // Handle logout
+        function handleLogout() {
+            // Clear user data
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            
+            // Show notification and redirect to splash screen
+            showNotification('You have been logged out successfully!');
+            setTimeout(() => {
+                showSplashScreen();
+            }, 1000);
+        }
+
+        // Handle admin login
+        function handleAdminLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            if (!email || !password) {
+                showNotification('Please enter admin email and password', true);
+                return;
+            }
+
+            // Check admin credentials
+            if (email === 'admin@Tawwacom.com' && password === 'Calicabdiabiib123') {
+                // Find or create admin user
+                let adminUser = users.find(u => u.email === email);
+                if (!adminUser) {
+                    adminUser = {
+                        id: Date.now(),
+                        name: 'Admin User',
+                        email: email,
+                        phone: '+251911000000',
+                        password: password,
+                        role: 'admin',
+                        registeredAt: new Date().toISOString()
+                    };
+                    users.unshift(adminUser);
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+
+                // Set current user as admin
+                currentUser = { ...adminUser };
+                delete currentUser.password;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                // Close modal and show services page
+                document.getElementById('adminLoginModal').style.display = 'none';
+                document.getElementById('adminLoginForm').reset();
+                
+                showNotification('Admin login successful!');
+                setTimeout(() => {
+                    showServicesPage();
+                }, 1000);
+            } else {
+                showNotification('Invalid admin credentials', true);
+            }
+        }
+
+        // Filter bookings function
+        function filterBookings(status) {
+            const allBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const tbody = document.getElementById('bookingsTableBody');
+            
+            let filteredBookings = allBookings;
+            if (status !== 'all') {
+                filteredBookings = allBookings.filter(booking => booking.status === status);
+            }
+            
+            const bookingsWithUsers = filteredBookings.map(booking => {
+                const user = allUsers.find(u => u.id === booking.userId);
+                return { ...booking, userName: user ? user.name : 'Unknown User' };
+            });
+            
+            tbody.innerHTML = bookingsWithUsers.map(booking => `
+                <tr>
+                    <td>${booking.userName}</td>
+                    <td>${booking.serviceName}</td>
+                    <td>${booking.date}</td>
+                    <td>${booking.time}</td>
+                    <td><span class="booking-status ${booking.status}">${booking.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-approve" onclick="updateBookingStatus(${booking.id}, 'confirmed')">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn-action btn-delete" onclick="updateBookingStatus(${booking.id}, 'cancelled')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize the application
+        initializeApp();
+
+        // Show notification
         function showNotification(message, isError = false) {
             notification.textContent = message;
-            notification.classList.remove('error');
-            if (isError) {
-                notification.classList.add('error');
-            }
-            notification.classList.add('show');
-            
+            notification.className = `notification ${isError ? 'error' : ''} show`;
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
 
-        // Simulate splash screen loading
-        setTimeout(() => {
-            splashScreen.classList.add('hidden');
-        }, 3000);
-
-        // Auth tabs functionality
-        loginTab.addEventListener('click', () => {
-            loginTab.classList.add('active');
-            registerTab.classList.remove('active');
-            loginForm.classList.add('active');
-            registerForm.classList.remove('active');
-        });
-
-        registerTab.addEventListener('click', () => {
-            registerTab.classList.add('active');
-            loginTab.classList.remove('active');
-            registerForm.classList.add('active');
-            loginForm.classList.remove('active');
-        });
-
-        // Login form submission
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            // Simple validation
-            if (email && password) {
-                // Simulate login success
-                currentUser = {
-                    name: email.split('@')[0],
-                    email: email
-                };
-                
-                userNameElement.textContent = currentUser.name;
-                splashScreen.classList.add('hidden');
-                servicesPage.classList.add('active');
-                showNotification('Login successful! Welcome back.');
-            } else {
-                showNotification('Please fill in all fields.', true);
-            }
-        });
-
-        // Register form submission
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const phone = document.getElementById('registerPhone').value;
-            const password = document.getElementById('registerPassword').value;
-            
-            // Simple validation
-            if (name && email && phone && password) {
-                // Simulate registration success
-                currentUser = {
-                    name: name,
-                    email: email,
-                    phone: phone
-                };
-                
-                userNameElement.textContent = currentUser.name;
-                splashScreen.classList.add('hidden');
-                servicesPage.classList.add('active');
-                showNotification('Registration successful! Welcome to Ethiopian Services Hub.');
-            } else {
-                showNotification('Please fill in all fields.', true);
-            }
-        });
-
-        // Service card click handler
-        serviceCards.forEach(card => {
-            card.addEventListener('click', () => {
-                selectedService = card.getAttribute('data-service');
-                serviceNameElement.textContent = selectedService;
-                bookingModal.style.display = 'grid';
-            });
-        });
-
-        // Modal close functionality
-        const closeModalButtons = document.querySelectorAll('.close-modal, #cancelBooking, #cancelAdminLogin');
-        closeModalButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                bookingModal.style.display = 'none';
-                adminLoginModal.style.display = 'none';
-                chatModal.style.display = 'none';
-            });
-        });
-
-        // Confirm booking
-        confirmBookingBtn.addEventListener('click', () => {
-            const date = document.getElementById('bookingDate').value;
-            const time = document.getElementById('bookingTime').value;
-            
-            if (!date || !time) {
-                showNotification('Please select date and time.', true);
-                return;
-            }
-            
-            bookingModal.style.display = 'none';
-            showNotification(`Booking confirmed for ${selectedService} on ${date} at ${time}`);
-            
-            // Reset form
-            document.getElementById('bookingDate').value = '';
-            document.getElementById('bookingTime').value = '';
-            document.getElementById('bookingDuration').value = '2';
-            document.getElementById('bookingNotes').value = '';
-        });
-
-        // Admin login button
-        adminLoginBtn.addEventListener('click', () => {
-            adminLoginModal.style.display = 'grid';
-        });
-
-        // Admin login form
-        confirmAdminLogin.addEventListener('click', () => {
-            const username = document.getElementById('adminUsername').value;
-            const password = document.getElementById('adminPassword').value;
-            
-            if (username === 'admin' && password === 'admin123') {
-                adminLoginModal.style.display = 'none';
-                showNotification('Admin login successful!');
-                
-                // Switch to admin panel
-                document.querySelector('[data-panel="admin"]').click();
-            } else {
-                showNotification('Invalid admin credentials.', true);
-            }
-        });
-
-        // Logout functionality
-        logoutBtn.addEventListener('click', () => {
-            currentUser = null;
-            servicesPage.classList.remove('active');
-            splashScreen.classList.remove('hidden');
-            
-            // Reset forms
-            loginForm.reset();
-            registerForm.reset();
-            
-            showNotification('You have been logged out.');
-        });
-
-        // Navigation tabs
-        navTabs.forEach(tab => {
+        // Auth tab switching
+        authTabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                const targetPanel = tab.getAttribute('data-panel');
+                const targetTab = tab.dataset.tab;
                 
                 // Update active tab
-                navT.forEach(t => t.classList.remove('active'));
+                authTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
-                // Show target panel
-                panelContents.forEach(panel => {
-                    panel.classList.remove('active');
-                    if (panel.id === `${targetPanel}Panel`) {
-                        panel.classList.add('active');
+                // Update active form
+                authForms.forEach(form => {
+                    form.classList.remove('active');
+                    if (form.id === `${targetTab}Form`) {
+                        form.classList.add('active');
                     }
                 });
             });
         });
 
-        // Chat functionality
-        function openChat() {
-            chatModal.style.display = 'grid';
-        }
+        // Register form submission
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const phone = document.getElementById('registerPhone').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('chat-message');
-            messageDiv.classList.add(sender);
-            
-            const messageText = document.createElement('div');
-            messageText.classList.add('message-text');
-            messageText.textContent = text;
-            
-            const messageInfo = document.createElement('div');
-            messageInfo.classList.add('message-info');
-            
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            if (sender === 'user') {
-                messageInfo.textContent = `${currentUser.name}, ${timeString}`;
-            } else if (sender === 'admin') {
-                messageInfo.textContent = `Support Agent, ${timeString}`;
-            } else {
-                messageInfo.textContent = `System, ${timeString}`;
+            // Validation
+            if (!name || !email || !phone || !password) {
+                showNotification('Please fill in all fields', true);
+                return;
             }
+
+            if (password !== confirmPassword) {
+                showNotification('Passwords do not match', true);
+                return;
+            }
+
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters', true);
+                return;
+            }
+
+            // Check if user already exists
+            if (users.find(user => user.email === email)) {
+                showNotification('This email is already registered', true);
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                name,
+                email,
+                phone,
+                password,
+                role: 'user', // Default role for new registrations
+                registeredAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
             
-            messageDiv.appendChild(messageText);
-            messageDiv.appendChild(messageInfo);
-            chatMessages.appendChild(messageDiv);
+            // Auto login after registration
+            currentUser = { ...newUser };
+            delete currentUser.password; // Don't store password in current user
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            showNotification('Registration successful!');
+            setTimeout(() => {
+                showServicesPage();
+            }, 1500);
+        });
+
+        // Login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
             
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showNotification('Please enter email and password', true);
+                return;
+            }
+
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (!user) {
+                showNotification('Invalid email or password', true);
+                return;
+            }
+
+            // Login successful
+            currentUser = { ...user };
+            delete currentUser.password;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            showNotification('Login successful!');
+            setTimeout(() => {
+                showServicesPage();
+            }, 1500);
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showNotification('You have been logged out');
+            setTimeout(() => {
+                showSplashScreen();
+            }, 1000);
+        });
+
+        // Show splash screen
+        function showSplashScreen() {
+            splashScreen.classList.remove('hidden');
+            servicesPage.classList.remove('active');
+            
+            // Clear forms
+            document.getElementById('loginForm').reset();
+            document.getElementById('registerForm').reset();
         }
 
-        sendMessageBtn.addEventListener('click', () => {
-            const message = chatInput.value.trim();
-            if (message) {
-                addMessage(message, 'user');
-                chatInput.value = '';
+        // Show services page
+        function showServicesPage() {
+            splashScreen.classList.add('hidden');
+            setTimeout(() => {
+                servicesPage.classList.add('active');
+            }, 800);
+
+            // Update user info
+            if (currentUser) {
+                userName.textContent = currentUser.name;
+                userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
                 
-                // Simulate admin response after a short delay
-                setTimeout(() => {
-                    addMessage("Thank you for your message. Our support team will respond shortly.", 'admin');
-                }, 1000);
+                // Show navigation tabs and admin tab if user is admin
+                const mainNavTabs = document.getElementById('mainNavTabs');
+                const adminNavTab = document.getElementById('adminNavTab');
+                
+                if (currentUser.role === 'admin') {
+                    mainNavTabs.style.display = 'flex';
+                    adminNavTab.style.display = 'block';
+                } else {
+                    mainNavTabs.style.display = 'none';
+                    adminNavTab.style.display = 'none';
+                }
+                
+                // Load user bookings and admin data
+                displayUserBookings();
+                if (currentUser.role === 'admin') {
+                    loadAdminData();
+                }
             }
-        });
-
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessageBtn.click();
-            }
-        });
-
-        // Add chat button to services page
-        const chatButton = document.createElement('button');
-        chatButton.innerHTML = '<i class="fas fa-comments"></i> Chat with Support';
-        chatButton.style.position = 'fixed';
-        chatButton.style.bottom = '20px';
-        chatButton.style.right = '20px';
-        chatButton.style.background = 'linear-gradient(135deg, var(--primary), #2980b9)';
-        chatButton.style.color = 'white';
-        chatButton.style.border = 'none';
-        chatButton.style.borderRadius = '25px';
-        chatButton.style.padding = '12px 20px';
-        chatButton.style.fontSize = '16px';
-        chatButton.style.fontWeight = '600';
-        chatButton.style.cursor = 'pointer';
-        chatButton.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-        chatButton.style.zIndex = '1000';
-        chatButton.style.display = 'flex';
-        chatButton.style.alignItems = 'center';
-        chatButton.style.gap = '8px';
-        chatButton.addEventListener('click', openChat);
-        document.body.appendChild(chatButton);
-
-        // Initialize with some sample bookings
-        const bookingsList = document.getElementById('bookingsList');
-        if (bookingsList.children.length === 0) {
-            const emptyBookings = document.createElement('div');
-            emptyBookings.classList.add('empty-bookings');
-            emptyBookings.textContent = 'You have no bookings yet. Book a service to get started!';
-            bookingsList.appendChild(emptyBookings);
         }
+
+        // Panel navigation
+        function switchPanel(panelName) {
+            const panels = document.querySelectorAll('.panel-content');
+            const navTabs = document.querySelectorAll('.nav-tab');
+            
+            panels.forEach(panel => panel.classList.remove('active'));
+            navTabs.forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(panelName).classList.add('active');
+            document.querySelector(`[data-target="${panelName}"]`).classList.add('active');
+            
+            if (panelName === 'adminPanel') {
+                loadAdminData();
+            }
+        }
+
+        // Load admin dashboard data
+        function loadAdminData() {
+            const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const allBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            
+            // Update statistics
+            document.getElementById('totalUsers').textContent = allUsers.length;
+            document.getElementById('totalBookings').textContent = allBookings.length;
+            
+            const today = new Date().toDateString();
+            const todayBookings = allBookings.filter(booking => 
+                new Date(booking.createdAt).toDateString() === today
+            );
+            document.getElementById('todayBookings').textContent = todayBookings.length;
+            
+            // Load users table
+            loadUsersTable();
+            
+            // Load bookings table
+            loadBookingsTable();
+        }
+
+        // Load users table
+        function loadUsersTable() {
+            const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const tbody = document.getElementById('usersTableBody');
+            
+            tbody.innerHTML = allUsers.map(user => `
+                <tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone}</td>
+                    <td><span class="role-badge ${user.role || 'user'}">${user.role || 'user'}</span></td>
+                    <td>${new Date(user.registeredAt).toLocaleDateString('en-US')}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-edit" onclick="editUser(${user.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            ${user.role !== 'admin' ? `
+                                <button class="btn-action btn-delete" onclick="deleteUser(${user.id})">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load bookings table
+        function loadBookingsTable() {
+            const allBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const tbody = document.getElementById('bookingsTableBody');
+            
+            const bookingsWithUsers = allBookings.map(booking => {
+                const user = allUsers.find(u => u.id === booking.userId);
+                return { ...booking, userName: user ? user.name : 'Unknown User' };
+            });
+            
+            tbody.innerHTML = bookingsWithUsers.map(booking => `
+                <tr>
+                    <td>${booking.userName}</td>
+                    <td>${booking.serviceName}</td>
+                    <td>${booking.date}</td>
+                    <td>${booking.time}</td>
+                    <td><span class="booking-status ${booking.status}">${booking.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-action btn-approve" onclick="updateBookingStatus(${booking.id}, 'confirmed')">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn-action btn-delete" onclick="updateBookingStatus(${booking.id}, 'cancelled')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Edit user function
+        function editUser(userId) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.id === userId);
+            
+            if (!user) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-backdrop';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user-edit"></i> Edit User</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" id="editUserName" value="${user.name}">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="editUserEmail" value="${user.email}">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone:</label>
+                            <input type="tel" id="editUserPhone" value="${user.phone}">
+                        </div>
+                        <div class="form-group">
+                            <label>Role:</label>
+                            <select id="editUserRole">
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline close-modal">Cancel</button>
+                        <button class="btn" id="saveUserChanges">Save</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.style.display = 'grid';
+            
+            // Modal event listeners
+            modal.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+            });
+            
+            document.getElementById('saveUserChanges').addEventListener('click', () => {
+                const updatedUser = {
+                    ...user,
+                    name: document.getElementById('editUserName').value,
+                    email: document.getElementById('editUserEmail').value,
+                    phone: document.getElementById('editUserPhone').value,
+                    role: document.getElementById('editUserRole').value
+                };
+                
+                const userIndex = users.findIndex(u => u.id === userId);
+                users[userIndex] = updatedUser;
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                document.body.removeChild(modal);
+                showNotification('User updated successfully');
+                loadUsersTable();
+            });
+        }
+
+        // Delete user function
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                users = users.filter(user => user.id !== userId);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                showNotification('User deleted successfully');
+                loadUsersTable();
+                loadAdminData(); // Refresh stats
+            }
+        }
+
+        // Update booking status
+        function updateBookingStatus(bookingId, newStatus) {
+            let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const bookingIndex = bookings.findIndex(b => b.id === bookingId);
+            
+            if (bookingIndex !== -1) {
+                bookings[bookingIndex].status = newStatus;
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+                
+                const statusText = newStatus === 'confirmed' ? 'approved' : 'rejected';
+                showNotification(`Booking has been ${statusText}`);
+                loadBookingsTable();
+                loadAdminData(); // Refresh stats
+            }
+        }
+
+        // Add user function
+        function addNewUser() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-backdrop';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user-plus"></i> Add New User</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Full Name:</label>
+                            <input type="text" id="newUserName" placeholder="Enter name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="newUserEmail" placeholder="Enter email">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone:</label>
+                            <input type="tel" id="newUserPhone" placeholder="Enter phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="newUserPassword" placeholder="Enter password">
+                        </div>
+                        <div class="form-group">
+                            <label>Role:</label>
+                            <select id="newUserRole">
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline close-modal">Cancel</button>
+                        <button class="btn" id="createNewUser">Create</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.style.display = 'grid';
+            
+            // Modal event listeners
+            modal.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+            });
+            
+            document.getElementById('createNewUser').addEventListener('click', () => {
+                const name = document.getElementById('newUserName').value.trim();
+                const email = document.getElementById('newUserEmail').value.trim();
+                const phone = document.getElementById('newUserPhone').value.trim();
+                const password = document.getElementById('newUserPassword').value;
+                const role = document.getElementById('newUserRole').value;
+                
+                if (!name || !email || !phone || !password) {
+                    showNotification('Please fill in all fields', true);
+                    return;
+                }
+                
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                
+                if (users.find(user => user.email === email)) {
+                    showNotification('This email is already registered', true);
+                    return;
+                }
+                
+                const newUser = {
+                    id: Date.now(),
+                    name,
+                    email,
+                    phone,
+                    password,
+                    role,
+                    registeredAt: new Date().toISOString()
+                };
+                
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                document.body.removeChild(modal);
+                showNotification('New user created successfully');
+                loadUsersTable();
+                loadAdminData(); // Refresh stats
+            });
+        }
+
+        // Save website settings
+        function saveWebsiteSettings() {
+            const siteName = document.getElementById('siteName').value;
+            const siteDescription = document.getElementById('siteDescription').value;
+            const maintenanceMode = document.getElementById('maintenanceMode').checked;
+            
+            const settings = {
+                siteName,
+                siteDescription,
+                maintenanceMode,
+                updatedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('websiteSettings', JSON.stringify(settings));
+            showNotification('Settings saved successfully');
+        }
+
+        // Load website settings
+        function loadWebsiteSettings() {
+            const settings = JSON.parse(localStorage.getItem('websiteSettings'));
+            if (settings) {
+                document.getElementById('siteName').value = settings.siteName || 'Ethiopian Services Hub';
+                document.getElementById('siteDescription').value = settings.siteDescription || 'Welcome to Ethiopian Services';
+                document.getElementById('maintenanceMode').checked = settings.maintenanceMode || false;
+            }
+        }
+
+        // Service card interactions
+        document.addEventListener('DOMContentLoaded', () => {
+            const serviceCards = document.querySelectorAll('.service-card');
+            
+            serviceCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const service = card.dataset.service;
+                    const serviceName = card.querySelector('h3').textContent;
+                    
+                    // Add visual feedback
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.style.transform = '';
+                    }, 150);
+                    
+                    showNotification(`You selected: ${serviceName}`);
+                    
+                    // Simulate service booking process
+                    setTimeout(() => {
+                        showServiceBookingModal(service, serviceName);
+                    }, 1000);
+                });
+            });
+        });
+
+        // Service booking modal
+        function showServiceBookingModal(serviceType, serviceName) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-backdrop';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-calendar-plus"></i> Make Booking - ${serviceName}</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="booking-form">
+                            <div class="form-group">
+                                <label>Your Name:</label>
+                                <input type="text" id="bookingName" value="${currentUser.name}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <input type="email" id="bookingEmail" value="${currentUser.email}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Booking Date:</label>
+                                <input type="date" id="bookingDate" min="${new Date().toISOString().split('T')[0]}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Time:</label>
+                                <select id="bookingTime" required>
+                                    <option value="">Select time</option>
+                                    <option value="09:00">9:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="14:00">2:00 PM</option>
+                                    <option value="15:00">3:00 PM</option>
+                                    <option value="16:00">4:00 PM</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Additional Details:</label>
+                                <textarea id="bookingNotes" placeholder="Add any special requests or notes..." rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline close-modal">Cancel</button>
+                        <button class="btn" id="confirmBooking">Confirm Booking</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.style.display = 'grid';
+
+            // Modal event listeners
+            modal.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+            });
+
+            document.getElementById('confirmBooking').addEventListener('click', () => {
+                const date = document.getElementById('bookingDate').value;
+                const time = document.getElementById('bookingTime').value;
+                const notes = document.getElementById('bookingNotes').value;
+
+                if (!date || !time) {
+                    showNotification('Please select date and time', true);
+                    return;
+                }
+
+                // Save booking
+                const booking = {
+                    id: Date.now(),
+                    userId: currentUser.id,
+                    service: serviceType,
+                    serviceName: serviceName,
+                    date: date,
+                    time: time,
+                    notes: notes,
+                    status: 'confirmed',
+                    createdAt: new Date().toISOString()
+                };
+
+                let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+                bookings.push(booking);
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+
+                document.body.removeChild(modal);
+                showNotification('Your booking has been confirmed!');
+                
+                // Update bookings display
+                setTimeout(() => {
+                    displayUserBookings();
+                }, 1000);
+            });
+        }
+
+        // Display user bookings
+        function displayUserBookings() {
+            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const userBookings = bookings.filter(booking => booking.userId === currentUser.id);
+
+            // Create bookings section if it doesn't exist
+            let bookingsSection = document.getElementById('userBookings');
+            if (!bookingsSection) {
+                bookingsSection = document.createElement('div');
+                bookingsSection.id = 'userBookings';
+                bookingsSection.className = 'bookings-section';
+                bookingsSection.innerHTML = `
+                    <h3><i class="fas fa-calendar-check"></i> Your Bookings</h3>
+                    <div id="bookingsList"></div>
+                `;
+                document.querySelector('.services-container').appendChild(bookingsSection);
+            }
+
+            const bookingsList = document.getElementById('bookingsList');
+            
+            if (userBookings.length === 0) {
+                bookingsList.innerHTML = '<div class="empty-bookings">No bookings made yet</div>';
+                return;
+            }
+
+            bookingsList.innerHTML = userBookings.map(booking => `
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <h4>${booking.serviceName}</h4>
+                        <span class="booking-status ${booking.status}">${booking.status}</span>
+                    </div>
+                    <div class="booking-details">
+                        <p><i class="fas fa-calendar"></i> ${new Date(booking.date).toLocaleDateString('en-US')}</p>
+                        <p><i class="fas fa-clock"></i> ${booking.time}</p>
+                        ${booking.notes ? `<p><i class="fas fa-note-sticky"></i> ${booking.notes}</p>` : ''}
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn-small btn-outline" onclick="cancelBooking(${booking.id})">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cancel booking
+        function cancelBooking(bookingId) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+                bookings = bookings.filter(booking => booking.id !== bookingId);
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+                
+                showNotification('Your booking has been cancelled');
+                displayUserBookings();
+            }
+        }
+
+        // Initialize the app
+        initializeApp();
     </script>
 </body>
 </html>
-                        

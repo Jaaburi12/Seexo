@@ -2,10 +2,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Laam P2P</title>
+<title>Laam P2P Simulation</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  /* --- Global Styles --- */
   :root {
     --bg: #0f172a;
     --card: rgba(255, 255, 255, 0.05);
@@ -20,7 +19,6 @@
   .card{background: var(--card); padding:24px; border-radius: var(--radius); box-shadow:0 10px 30px rgba(0,0,0,0.5);}
   h1{font-size:24px; margin-bottom:12px;}
   h2{font-size:20px; margin-bottom:12px;}
-  p{color: var(--muted); margin-bottom:12px;}
   input{width:100%; padding:10px 12px; margin-bottom:12px; border-radius:8px; border:none; background: rgba(255,255,255,0.08); color:var(--text);}
   button{padding:10px 16px; border:none; border-radius:8px; cursor:pointer; font-weight:600; transition:0.3s;}
   .btn-primary{background: var(--accent); color:#fff;}
@@ -28,12 +26,12 @@
   .btn-ghost{background: transparent; border:1px solid rgba(255,255,255,0.2); color:var(--text);}
   .btn-ghost:hover{background: rgba(255,255,255,0.1);}
   .hidden{display:none;}
-  .trade-btn{margin-right:8px;}
   .trade-section{display:flex; flex-direction:column; gap:16px;}
   .trade-card{background: rgba(255,255,255,0.05); padding:16px; border-radius: var(--radius); display:flex; justify-content:space-between; align-items:center;}
   .trade-card span{font-weight:600;}
   .header{display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;}
-  .header button{margin-left:12px;}
+  table{width:100%; border-collapse:collapse; margin-top:16px;}
+  th, td{padding:10px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.1);}
   @media(max-width:768px){.trade-card{flex-direction:column; align-items:flex-start; gap:8px;}}
 </style>
 </head>
@@ -69,87 +67,53 @@
   <div class="trade-section">
     <div class="trade-card">
       <div><span>Buy USDT</span></div>
-      <div>
-        <button class="trade-btn btn-primary">Buy</button>
-      </div>
+      <div><button class="btn-primary" onclick="executeTrade('buy', 10)">Buy 10 USDT</button></div>
     </div>
     <div class="trade-card">
       <div><span>Sell USDT</span></div>
-      <div>
-        <button class="trade-btn btn-primary">Sell</button>
-      </div>
+      <div><button class="btn-primary" onclick="executeTrade('sell', 5)">Sell 5 USDT</button></div>
     </div>
   </div>
+  <h2>Ledger (Simulated Off-chain)</h2>
+  <table id="ledgerTable">
+    <thead>
+      <tr><th>Type</th><th>Amount</th><th>Status</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </div>
 
-  </div><script>
-  // --- DOM Elements ---
-  const authSection = document.getElementById('authSection');
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const showLogin = document.getElementById('showLogin');
-  const showRegister = document.getElementById('showRegister');
-  const btnLogin = document.getElementById('btnLogin');
-  const btnRegister = document.getElementById('btnRegister');
+  </div>
+<script>
+// --- DOM Elements ---
+const authSection = document.getElementById('authSection');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const showLogin = document.getElementById('showLogin');
+const showRegister = document.getElementById('showRegister');
+const btnLogin = document.getElementById('btnLogin');
+const btnRegister = document.getElementById('btnRegister');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
+const regUsername = document.getElementById('regUsername');
+const regPassword = document.getElementById('regPassword');
+const tradeSection = document.getElementById('tradeSection');
+const btnLogout = document.getElementById('btnLogout');
+const ledgerTable = document.querySelector('#ledgerTable tbody');// Show / Hide forms showLogin.addEventListener('click', ()=>{loginForm.classList.remove('hidden'); registerForm.classList.add('hidden');}); showRegister.addEventListener('click', ()=>{registerForm.classList.remove('hidden'); loginForm.classList.add('hidden');});
 
-  const loginUsername = document.getElementById('loginUsername');
-  const loginPassword = document.getElementById('loginPassword');
-  const regUsername = document.getElementById('regUsername');
-  const regPassword = document.getElementById('regPassword');
+// Register btnRegister.addEventListener('click', ()=>{ const username = regUsername.value.trim(); const password = regPassword.value.trim(); if(!username || !password){ alert('Please enter username and password'); return; } localStorage.setItem('p2pUser', JSON.stringify({username,password})); alert('Registration successful! Redirecting to Trades...'); showTrades(); });
 
-  const tradeSection = document.getElementById('tradeSection');
-  const btnLogout = document.getElementById('btnLogout');
+// Login btnLogin.addEventListener('click', ()=>{ const username = loginUsername.value.trim(); const password = loginPassword.value.trim(); const stored = JSON.parse(localStorage.getItem('p2pUser')); if(!stored){ alert('No registered user found. Please register.'); return; } if(username === stored.username && password === stored.password){ alert('Login successful! Redirecting to Trades...'); showTrades(); } else { alert('Incorrect username or password'); } });
 
-  // --- Show / Hide Forms ---
-  showLogin.addEventListener('click', ()=>{
-    loginForm.classList.remove('hidden');
-    registerForm.classList.add('hidden');
-  });
-  showRegister.addEventListener('click', ()=>{
-    registerForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
-  });
+// Show Trades function showTrades(){ authSection.classList.add('hidden'); tradeSection.classList.remove('hidden'); loadLedger(); }
 
-  // --- Register ---
-  btnRegister.addEventListener('click', ()=>{
-    const username = regUsername.value.trim();
-    const password = regPassword.value.trim();
-    if(!username || !password){ alert('Please enter username and password'); return; }
-    localStorage.setItem('p2pUser', JSON.stringify({username,password}));
-    alert('Registration successful! Redirecting to Trades...');
-    showTrades();
-  });
+// Logout btnLogout.addEventListener('click', ()=>{ tradeSection.classList.add('hidden'); authSection.classList.remove('hidden'); });
 
-  // --- Login ---
-  btnLogin.addEventListener('click', ()=>{
-    const username = loginUsername.value.trim();
-    const password = loginPassword.value.trim();
-    const stored = JSON.parse(localStorage.getItem('p2pUser'));
-    if(!stored){ alert('No registered user found. Please register.'); return; }
-    if(username === stored.username && password === stored.password){
-      alert('Login successful! Redirecting to Trades...');
-      showTrades();
-    } else {
-      alert('Incorrect username or password');
-    }
-  });
+// Auto-login if registered window.addEventListener('load', ()=>{ const stored = JSON.parse(localStorage.getItem('p2pUser')); if(stored){ showTrades(); } });
 
-  // --- Show Trades ---
-  function showTrades(){
-    authSection.classList.add('hidden');
-    tradeSection.classList.remove('hidden');
-  }
+// --- Trade Simulation --- function executeTrade(type, amount){ const entry = { type, amount, status: 'Pending Escrow' }; let ledger = JSON.parse(localStorage.getItem('ledger') || '[]'); ledger.push(entry); localStorage.setItem('ledger', JSON.stringify(ledger)); loadLedger(); alert(${type.toUpperCase()} ${amount} USDT executed. Status: Pending Escrow); }
 
-  // --- Logout ---
-  btnLogout.addEventListener('click', ()=>{
-    tradeSection.classList.add('hidden');
-    authSection.classList.remove('hidden');
-  });
+function loadLedger(){ const ledger = JSON.parse(localStorage.getItem('ledger') || '[]'); ledgerTable.innerHTML = ''; ledger.forEach(e=>{ const row = document.createElement('tr'); row.innerHTML = <td>${e.type}</td><td>${e.amount}</td><td>${e.status}</td>; ledgerTable.appendChild(row); }); } </script>
 
-  // --- Auto-login if already registered ---
-  window.addEventListener('load', ()=>{
-    const stored = JSON.parse(localStorage.getItem('p2pUser'));
-    if(stored){ showTrades(); }
-  });
-</script></body>
-</html>
+</body>
+  </html>

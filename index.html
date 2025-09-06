@@ -1,352 +1,343 @@
 <!--
-Laam P2P - Mini MVP
-Single-file HTML + JS (no build tools). Paste this as `index.html` to a GitHub repo.
-Features:
-- Responsive modern UI
-- Register / Login (localStorage mock)
-- Create Buy / Sell orders (localStorage)
-- Order list with filter and quick Accept
-- Simple chat/notes per order
-- Optional MetaMask wallet connect (if available) for demo transfers
-- Escrow simulation: order moves through states (Open -> Locked -> Released)
+Laam P2P — BSC USDT Live (Single-file HTML)
+Drop-in replacement/upgrade for the demo. Features:
+- Connect MetaMask (or any injected EIP-1193 wallet)
+- Detect BSC chain (Testnet 97 or Mainnet 56)
+- Show ETH/BNB balance and BEP20 (USDT) token balance (includes decimals)
+- Approve & Transfer USDT (uses ERC20 transfer)
+- Friendly UI and safety checks
 
-HOW TO USE:
-1. Save as index.html and open in browser (or host on GitHub Pages).
-2. Register a user (email) and create orders.
-3. Click "Connect Wallet" to demo Web3 actions (only works if MetaMask is installed).
+IMPORTANT:
+- By default this file points to BSC Testnet (chainId 97). Change NETWORK = 'bsc' to 'bsc-testnet' or update CONTRACT_ADDRESS to mainnet USDT if you intend to use mainnet.
+- Always test on testnet with small amounts first.
 
-This file is intentionally self-contained and commented for easy editing.
+How to use:
+1. Save as index.html and open in browser with MetaMask installed.
+2. Switch MetaMask to BSC Testnet (or Mainnet if you changed settings).
+3. Use the UI to connect, check balances, approve, and transfer USDT.
+
+NOTE about USDT on BSC:
+- USDT contracts differ between networks. Replace CONTRACT_ADDRESS with the correct token contract for your target network.
+
 --><!doctype html>
 
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Laam P2P — Mini MVP</title>
-  <style>
-    :root{
-      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#7c3aed; --success:#12b981; --danger:#ef4444; --glass: rgba(255,255,255,0.03);
-      --radius:14px; --pad:16px; --maxw:1100px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,#071028 0%, #071022 60%);color:#e6eef8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-    .app{width:100%;max-width:var(--maxw)}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:18px;box-shadow:0 6px 18px rgba(124,58,237,0.18)}
-    h1{margin:0;font-size:18px}
-    p.lead{margin:0;color:var(--muted);font-size:13px}.controls{display:flex;gap:12px;align-items:center}
-button.btn{background:var(--accent);border:0;padding:10px 14px;border-radius:10px;color:white;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(124,58,237,0.12)}
-button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);}
-
-.grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:var(--pad);border-radius:var(--radius);box-shadow:0 8px 30px rgba(2,6,23,0.6)}
-
-/* Left column */
-.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.filters{display:flex;gap:8px}
-.orders{display:grid;gap:12px}
-.order{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;background:var(--glass);align-items:center}
-.order .meta{display:flex;flex-direction:column}
-.tag{font-size:12px;padding:6px 8px;border-radius:8px}
-.tag.buy{background:linear-gradient(90deg,#084e3d,#0ea5a3);color:white}
-.tag.sell{background:linear-gradient(90deg,#4c1d95,#7c3aed);color:white}
-.small{font-size:12px;color:var(--muted)}
-.price{font-weight:700}
-.order-actions{display:flex;gap:8px}
-
-/* Right column */
-.panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-form.row{display:grid;gap:8px}
-input,select,textarea{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px;color:inherit}
-textarea{min-height:80px}
-
-footer{margin-top:14px;color:var(--muted);font-size:13px;text-align:center}
-
-/* Responsive */
-@media (max-width:980px){.grid{grid-template-columns:1fr;}.controls{flex-wrap:wrap}}
-
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Laam P2P — BSC USDT Live</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#071022;--card:#081225;--muted:#9aa4b2;--accent:#7c3aed;--glass:rgba(255,255,255,0.03);--radius:12px}
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#041024,#071022);color:#e6eef8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .wrap{width:100%;max-width:980px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:var(--radius);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .logo{display:flex;gap:12px;align-items:center}
+  .logo .box{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:700}
+  h1{margin:0;font-size:18px}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+  .controls{display:flex;gap:8px;align-items:center}
+  button{cursor:pointer;border:0;padding:8px 12px;border-radius:10px}
+  .btn-primary{background:var(--accent);color:#fff;font-weight:600}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr 320px;gap:14px}
+  .panel{background:var(--card);padding:12px;border-radius:10px}
+  .row{display:flex;flex-direction:column;gap:8px}
+  input,select{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;color:inherit}
+  .small{font-size:13px;color:var(--muted)}
+  .stat{display:flex;gap:12px;align-items:center}
+  .token-balance{font-size:18px;font-weight:700}
+  .danger{color:#ff6b6b}
+  .success{color:#4ade80}
+  .log{max-height:220px;overflow:auto;font-size:13px;color:var(--muted)}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}} 
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">LAAM</div>
-        <div>
-          <h1>Laam P2P — Mini MVP</h1>
-          <p class="lead">Create orders, accept trades, and demo wallet connect — all local (no server).</p>
-        </div>
-      </div>
-      <div class="controls">
-        <div id="userBadge" class="small" style="min-width:180px">Not signed in</div>
-        <button id="btnConnect" class="ghost">Connect Wallet</button>
-        <button id="btnAuth" class="btn">Register / Login</button>
-      </div>
-    </header><main class="grid">
-  <section>
+  <div class="wrap">
     <div class="card">
-      <div class="toolbar">
-        <div class="filters">
-          <select id="filterType"><option value="all">All</option><option value="buy">Buy</option><option value="sell">Sell</option></select>
-          <select id="filterCurrency"><option value="any">Any</option><option>USDT</option><option>Laam</option><option>BTC</option></select>
-        </div>
-        <div style="margin-left:auto;display:flex;gap:8px">
-          <input id="search" placeholder="Search orders..." style="background:transparent;border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:10px;color:var(--muted)" />
-          <button id="btnRefresh" class="ghost">Refresh</button>
-        </div>
-      </div>
-
-      <div id="orders" class="orders"></div>
-    </div>
-
-    <div style="height:12px"></div>
-
-    <div class="card">
-      <div class="panel-title"><strong>Activity</strong><span class="small">local session log</span></div>
-      <div id="log" style="max-height:160px;overflow:auto;font-size:13px;color:var(--muted)"></div>
-    </div>
-  </section>
-
-  <aside>
-    <div class="card">
-      <div class="panel-title"><strong>Create Order</strong><span class="small">Escrow simulated</span></div>
-      <form id="formOrder" class="row">
-        <label class="small">Type</label>
-        <select id="ordType"><option value="buy">Buy</option><option value="sell">Sell</option></select>
-        <label class="small">Currency</label>
-        <select id="ordCurrency"><option>USDT</option><option>Laam</option><option>BTC</option></select>
-        <label class="small">Amount</label>
-        <input id="ordAmount" type="number" step="any" min="0" placeholder="100" />
-        <label class="small">Price (per unit)</label>
-        <input id="ordPrice" type="number" step="any" min="0" placeholder="1.00" />
-        <label class="small">Payment Notes (bank, telebirr...)</label>
-        <textarea id="ordNotes" placeholder="e.g. Telebirr: +2519..."></textarea>
-        <div style="display:flex;gap:8px;margin-top:6px">
-          <button type="submit" class="btn">Post Order</button>
-          <button type="button" id="btnClearOrders" class="ghost">Clear all (dev)</button>
-        </div>
-      </form>
-    </div>
-
-    <div style="height:12px"></div>
-
-    <div class="card">
-      <div class="panel-title"><strong>Selected Order</strong><span id="selState" class="small">none</span></div>
-      <div id="selCard" style="min-height:180px;color:var(--muted)">
-        <div style="font-size:13px">Select an order to see details and chat / accept.</div>
-      </div>
-    </div>
-  </aside>
-</main>
-
-<footer>Made for demo — copy the file to GitHub & open with GitHub Pages to share.</footer>
-
-  </div>  <script>
-    // Simple localStorage-backed P2P mock
-    const DB_KEY = 'laam_p2p_demo_v1';
-    const USER_KEY = 'laam_p2p_user';
-
-    function uid(prefix='id'){
-      return prefix+'_'+Math.random().toString(36).slice(2,9);
-    }
-
-    function now(){return new Date().toISOString()}
-
-    function load(){
-      const raw = localStorage.getItem(DB_KEY);
-      return raw ? JSON.parse(raw) : {orders:[], logs:[]};
-    }
-    function save(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-
-    function log(msg){
-      const db = load(); db.logs.unshift({t:now(),m:msg}); if(db.logs.length>200) db.logs.pop(); save(db); renderLog();
-    }
-
-    // Auth (mock)
-    function currentUser(){
-      return JSON.parse(localStorage.getItem(USER_KEY) || 'null');
-    }
-    function setUser(u){ localStorage.setItem(USER_KEY, JSON.stringify(u)); renderUser(); }
-    function signOut(){ localStorage.removeItem(USER_KEY); renderUser(); }
-
-    // UI render
-    const ordersEl = document.getElementById('orders');
-    const logEl = document.getElementById('log');
-    const userBadge = document.getElementById('userBadge');
-    const selCard = document.getElementById('selCard');
-    const selState = document.getElementById('selState');
-
-    function renderUser(){
-      const u = currentUser();
-      if(u) userBadge.innerHTML = `Signed as <strong style="color:#fff">${u.email}</strong>`;
-      else userBadge.innerText = 'Not signed in';
-    }
-
-    function renderLog(){
-      const db = load(); logEl.innerHTML = db.logs.slice(0,60).map(l=>`<div><span style="color:var(--muted);font-size:12px">${l.t}</span> — ${escapeHtml(l.m)}</div>`).join('');
-    }
-
-    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-    function renderOrders(){
-      const db = load();
-      const filterType = document.getElementById('filterType').value;
-      const fcur = document.getElementById('filterCurrency').value;
-      const q = document.getElementById('search').value.trim().toLowerCase();
-      let list = db.orders.slice().reverse();
-      if(filterType!=='all') list = list.filter(o=>o.type===filterType);
-      if(fcur!=='any') list = list.filter(o=>o.currency===fcur);
-      if(q) list = list.filter(o=> (o.notes+o.owner+o.currency).toLowerCase().includes(q));
-
-      if(!list.length){ ordersEl.innerHTML = '<div class="small" style="padding:12px">No orders — create one on the right.</div>'; return }
-
-      ordersEl.innerHTML = list.map(o=>{
-        return `
-        <div class="order" data-id="${o.id}">
-          <div style="display:flex;gap:12px;align-items:center">
-            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;flex-direction:column;align-items:center;justify-content:center">
-              <div style="font-weight:700">${o.currency}</div>
-              <div class="small">${o.amount}</div>
-            </div>
-            <div class="meta">
-              <div style="display:flex;gap:10px;align-items:center"><div class="price">${Number(o.price).toLocaleString()}</div><div class="small">/unit</div></div>
-              <div class="small">${o.type.toUpperCase()} • ${o.owner} • ${new Date(o.created).toLocaleString()}</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end">
-            <div style="display:flex;gap:8px">
-              <div class="tag ${o.type}">${o.type.toUpperCase()}</div>
-              <div class="small">${o.status}</div>
-            </div>
-            <div class="order-actions" style="margin-top:8px">
-              <button class="ghost btnView" data-id="${o.id}">View</button>
-              <button class="btn btnAccept" data-id="${o.id}">Accept</button>
-            </div>
-          </div>
-        </div>
-        `
-      }).join('');
-
-      // hook events
-      document.querySelectorAll('.btnView').forEach(b=>b.addEventListener('click',e=>showOrder(e.target.dataset.id)));
-      document.querySelectorAll('.btnAccept').forEach(b=>b.addEventListener('click',e=>acceptOrder(e.target.dataset.id)));
-    }
-
-    function showOrder(id){
-      const db = load(); const o = db.orders.find(x=>x.id===id);
-      if(!o) return;
-      selState.innerText = o.status;
-      selCard.innerHTML = `
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">
-          <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(90deg,#0ea5a3,#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:700">${o.currency[0]}</div>
+      <header>
+        <div class="logo">
+          <div class="box">LAAM</div>
           <div>
-            <div style="font-weight:700">${o.type.toUpperCase()} ${o.currency}</div>
-            <div class="small">Posted by <strong>${o.owner}</strong> • ${new Date(o.created).toLocaleString()}</div>
+            <h1>Laam P2P — BSC USDT Live</h1>
+            <p class="lead">Connect MetaMask, view USDT (BEP20) balance, Approve & Transfer.</p>
           </div>
         </div>
-        <div style="margin-bottom:8px"><strong>Amount:</strong> ${o.amount} • <strong>Price:</strong> ${o.price} per unit</div>
-        <div style="margin-bottom:8px"><strong>Payment notes:</strong><div class="small" style="margin-top:6px">${escapeHtml(o.notes)}</div></div>
-        <div style="margin-bottom:8px"><strong>Status:</strong> <span class="small">${o.status}</span></div>
-        <div style="margin-top:8px">
-          <textarea id="chatMsg" placeholder="Send a message / payment details" style="width:100%;border-radius:8px"></textarea><div style="display:flex;gap:8px;margin-top:8px">
-        <button id="btnSendMsg" class="btn">Send</button>
-        <button id="btnLock" class="ghost">Lock (simulate escrow)</button>
-        <button id="btnRelease" class="ghost">Release (simulate)</button>
+        <div class="controls">
+          <div id="userInfo" class="small">Not connected</div>
+          <button id="btnConnect" class="btn-primary">Connect Wallet</button>
+        </div>
+      </header><main class="grid">
+    <section>
+      <div class="panel">
+        <div class="row">
+          <div class="stat"><div>
+            <div class="small">Network</div>
+            <div id="networkName">—</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div class="small">BNB Balance</div>
+            <div id="bnbBal">—</div>
+          </div></div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div>
+            <div class="small">USDT (BEP20) Contract</div>
+            <div id="tokenAddr" class="small">—</div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div>
+              <div class="small">Token</div>
+              <div><span id="tokenSymbol">—</span> <span class="small">•</span> <span id="tokenDecimals" class="small">— decimals</span></div>
+            </div>
+            <div style="text-align:right">
+              <div class="small">Balance</div>
+              <div class="token-balance" id="tokenBalance">—</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="btnRefresh" class="btn-ghost">Refresh Balances</button>
+            <button id="btnSwitchNet" class="btn-ghost">Switch Network</button>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div class="small">Transfer USDT</div>
+          <input id="toAddr" placeholder="Recipient address" />
+          <input id="sendAmount" placeholder="Amount (decimal)" />
+          <div style="display:flex;gap:8px">
+            <button id="btnApprove" class="btn-ghost">Approve Spender</button>
+            <button id="btnTransfer" class="btn-primary">Transfer (transfer)</button>
+          </div>
+
+          <div style="margin-top:10px" class="small">Approval spender (optional):
+            <input id="spenderAddr" placeholder="Spender address (for approval)" style="width:100%;margin-top:6px" />
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div class="small">Logs</div>
+          <div id="log" class="log"></div>
+        </div>
       </div>
-    </div>
-    <div id="chatBox" style="margin-top:10px;max-height:120px;overflow:auto;background:rgba(0,0,0,0.04);padding:8px;border-radius:8px;color:var(--muted)"></div>
-  `;
+    </section>
 
-  // load messages
-  const mb = (o.messages||[]).map(m=>`<div style="margin-bottom:6px"><strong>${m.from}</strong> <span style="color:var(--muted);font-size:12px">${new Date(m.t).toLocaleTimeString()}</span><div>${escapeHtml(m.text)}</div></div>`).join('');
-  document.getElementById('chatBox').innerHTML = mb;
+    <aside>
+      <div class="panel">
+        <div class="small">Important notes</div>
+        <ul class="small">
+          <li>This UI uses Ethers.js (CDN). MetaMask must be installed.</li>
+          <li>By default the file targets <strong>BSC Testnet</strong>. Change CONTRACT_ADDRESS for mainnet tokens.</li>
+          <li>Always test small amounts first. This demo sends real blockchain transactions when on mainnet.</li>
+        </ul>
 
-  document.getElementById('btnSendMsg').addEventListener('click',()=>{
-    const txt = document.getElementById('chatMsg').value.trim(); if(!txt) return alert('Enter message');
-    const db = load(); const ord = db.orders.find(x=>x.id===id);
-    ord.messages = ord.messages||[]; ord.messages.push({from: currentUser()?currentUser().email:'Guest', t:now(), text:txt}); save(db); renderOrders(); showOrder(id); log(`Message on ${id}: ${txt}`);
-  });
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03)">
 
-  document.getElementById('btnLock').addEventListener('click',()=>{
-    const db = load(); const ord = db.orders.find(x=>x.id===id);
-    if(ord.status !== 'open') return alert('Order not open');
-    if(!currentUser()) return alert('Please register to accept/lock');
-    ord.status = 'locked'; ord.lockedBy = currentUser().email; save(db); renderOrders(); showOrder(id); log(`Order ${id} locked by ${currentUser().email}`);
-  });
+        <div class="small">Quick troubleshooting</div>
+        <ol class="small">
+          <li>Wallet not detected? Install MetaMask and refresh.</li>
+          <li>Wrong network? Click Switch Network to request BSC Testnet in MetaMask.</li>
+          <li>Insufficient funds? Ensure you have BNB for gas and some USDT for transfers.</li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+</div>
 
-  document.getElementById('btnRelease').addEventListener('click',()=>{
-    const db = load(); const ord = db.orders.find(x=>x.id===id);
-    if(ord.status !== 'locked') return alert('Only locked orders can be released');
-    ord.status = 'released'; save(db); renderOrders(); showOrder(id); log(`Order ${id} released`);
-  });
+  </div><script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script><script>
+// --- SETTINGS (change as needed) ---
+// Default: use BSC Testnet settings (safest for testing).
+const NETWORK = 'bsc-testnet'; // 'bsc' for mainnet, 'bsc-testnet' for testnet
+// Replace this with the target USDT contract on the chosen network.
+// NOTE: this is a placeholder. On BSC Testnet you might deploy a mock USDT or use a known test token.
+let CONTRACT_ADDRESS = '0x55d398326f99059fF775485246999027B3197955'; // default is BSC mainnet USDT - CHANGE for testnet
+
+// Minimal ERC20 ABI we'll use
+const ERC20_ABI = [
+  "function name() view returns (string)",
+  "function symbol() view returns (string)",
+  "function decimals() view returns (uint8)",
+  "function balanceOf(address) view returns (uint)",
+  "function allowance(address owner, address spender) view returns (uint)",
+  "function approve(address spender, uint amount) returns (bool)",
+  "function transfer(address to, uint amount) returns (bool)",
+  "event Transfer(address indexed from, address indexed to, uint amount)"
+];
+
+// Chain configuration
+const CHAINS = {
+  'bsc': {chainId: '0x38', name: 'BSC Mainnet', rpc: 'https://bsc-dataseed.binance.org/'},
+  'bsc-testnet': {chainId: '0x61', name: 'BSC Testnet', rpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/'}
+};
+
+// If user chose testnet, try to set a common testnet USDT mock address placeholder (must be replaced by user)
+if(NETWORK === 'bsc-testnet'){
+  // WARNING: There is no canonical "USDT" on testnet. Keep CONTRACT_ADDRESS empty so user can paste a token.
+  CONTRACT_ADDRESS = ''; // user MUST fill this with a test token address on BSC testnet, or deploy one.
 }
 
-function acceptOrder(id){
-  const u = currentUser(); if(!u) return alert('Please register/login to accept orders');
-  const db = load(); const o = db.orders.find(x=>x.id===id);
-  if(!o) return alert('Order not found');
-  if(o.status !== 'open') return alert('Order already taken');
-  // simple accept -> move to locked state and set counterparty
-  o.status = 'locked'; o.lockedBy = u.email; o.messages = o.messages||[]; o.messages.push({from:u.email,t:now(),text:'I accept this order — payment sent (add details here).'});
-  save(db); renderOrders(); showOrder(id); log(`Order ${id} accepted by ${u.email}`);
+// --- UI refs ---
+const btnConnect = document.getElementById('btnConnect');
+const userInfo = document.getElementById('userInfo');
+const networkName = document.getElementById('networkName');
+const bnbBal = document.getElementById('bnbBal');
+const tokenAddr = document.getElementById('tokenAddr');
+const tokenSymbol = document.getElementById('tokenSymbol');
+const tokenDecimals = document.getElementById('tokenDecimals');
+const tokenBalance = document.getElementById('tokenBalance');
+const btnRefresh = document.getElementById('btnRefresh');
+const btnSwitchNet = document.getElementById('btnSwitchNet');
+const btnApprove = document.getElementById('btnApprove');
+const btnTransfer = document.getElementById('btnTransfer');
+const logEl = document.getElementById('log');
+
+const toAddrEl = document.getElementById('toAddr');
+const sendAmountEl = document.getElementById('sendAmount');
+const spenderEl = document.getElementById('spenderAddr');
+const tokenAddrEl = document.getElementById('tokenAddr');
+
+let provider, signer, userAddress, chainIdHex;
+let tokenContract, tokenDecimalsValue = 18;
+
+function log(msg, level='info'){
+  const time = new Date().toLocaleTimeString();
+  const el = document.createElement('div');
+  el.innerHTML = `<span style="color:var(--muted);font-size:12px">${time}</span> — ${msg}`;
+  logEl.prepend(el);
 }
 
-// Form handlers
-document.getElementById('formOrder').addEventListener('submit',e=>{
-  e.preventDefault();
-  const u = currentUser(); if(!u) return alert('Please Register / Login first');
-  const type = document.getElementById('ordType').value;
-  const currency = document.getElementById('ordCurrency').value;
-  const amount = Number(document.getElementById('ordAmount').value);
-  const price = Number(document.getElementById('ordPrice').value);
-  const notes = document.getElementById('ordNotes').value || '';
-  if(!amount || !price) return alert('Enter amount and price');
-  const db = load();
-  const o = {id:uid('ord'), type, currency, amount, price, notes, owner:u.email, created:now(), status:'open', messages:[]};
-  db.orders = db.orders||[]; db.orders.push(o); save(db); renderOrders(); log(`New order ${o.id} by ${u.email}`); e.target.reset();
-});
-
-document.getElementById('btnClearOrders').addEventListener('click',()=>{ if(!confirm('Clear demo data?')) return; localStorage.removeItem(DB_KEY); renderOrders(); renderLog(); });
-
-document.getElementById('btnRefresh').addEventListener('click',renderOrders);
-document.getElementById('filterType').addEventListener('change',renderOrders);
-document.getElementById('filterCurrency').addEventListener('change',renderOrders);
-document.getElementById('search').addEventListener('input',renderOrders);
-
-// Simple Register/Login modal using prompt (keeps file single)
-document.getElementById('btnAuth').addEventListener('click',()=>{
-  const have = currentUser();
-  if(have){ if(confirm('Sign out?')){ signOut(); log('User signed out'); }} else {
-    const email = prompt('Enter email to register/login:'); if(!email) return; setUser({email}); log(`User registered: ${email}`);
+async function connectWallet(){
+  if(!window.ethereum) return alert('No injected wallet found (MetaMask required)');
+  provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
+  try{
+    await provider.send('eth_requestAccounts', []);
+    signer = provider.getSigner();
+    userAddress = await signer.getAddress();
+    const network = await provider.getNetwork();
+    chainIdHex = '0x' + network.chainId.toString(16);
+    userInfo.innerHTML = `<strong>${short(userAddress)}</strong>`;
+    networkName.innerText = `${network.name} (chainId ${network.chainId})`;
+    log('Wallet connected: ' + userAddress);
+    await loadBalances();
+  }catch(err){
+    console.error(err); alert('Connection cancelled or failed');
   }
-});
+}
 
-// Wallet connect (optional) — MetaMask example
-document.getElementById('btnConnect').addEventListener('click',async ()=>{
-  if(window.ethereum){
-    try{
-      const accounts = await window.ethereum.request({method:'eth_requestAccounts'});
-      const a = accounts[0];
-      alert('Wallet connected: '+a);
-      log('Wallet connected: '+a);
-    }catch(err){alert('Wallet connect cancelled')}
-  }else{
-    alert('No Web3 wallet detected. Install MetaMask to demo wallet actions.');
+function short(addr){ if(!addr) return '—'; return addr.slice(0,6)+'...'+addr.slice(-4); }
+
+async function loadBalances(){
+  if(!provider || !signer) return;
+  try{
+    const addr = await signer.getAddress();
+    const bal = await provider.getBalance(addr);
+    bnbBal.innerText = ethers.utils.formatEther(bal) + ' BNB';
+
+    if(!CONTRACT_ADDRESS){ tokenAddr.innerText = 'No token set — paste a contract address in the code (CONTRACT_ADDRESS) or edit on the page source.'; tokenSymbol.innerText='—'; tokenBalance.innerText='—'; tokenDecimals.innerText='—'; return; }
+    tokenAddr.innerText = CONTRACT_ADDRESS;
+    tokenContract = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, provider);
+    // attach signer for write calls
+    tokenContract = tokenContract.connect(signer);
+    const sym = await tokenContract.symbol();
+    const dec = await tokenContract.decimals();
+    tokenDecimalsValue = dec;
+    tokenSymbol.innerText = sym;
+    tokenDecimals.innerText = dec + ' decimals';
+    const raw = await tokenContract.balanceOf(addr);
+    const human = ethers.utils.formatUnits(raw, dec);
+    tokenBalance.innerText = human + ' ' + sym;
+  }catch(err){ console.error(err); log('Error loading balances: '+err.message, 'error'); }
+}
+
+async function switchNetwork(){
+  if(!window.ethereum) return alert('No wallet');
+  const target = CHAINS[NETWORK];
+  try{
+    await window.ethereum.request({method:'wallet_switchEthereumChain', params:[{chainId: target.chainId}]});
+    log('Requested network switch to ' + target.name);
+    await connectWallet();
+  }catch(switchError){
+    // This error code indicates that the chain has not been added to MetaMask.
+    if(switchError.code === 4902){
+      try{
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: target.chainId,
+            chainName: target.name,
+            rpcUrls: [target.rpc],
+            nativeCurrency: {name: 'BNB', symbol:'BNB', decimals:18}
+          }]
+        });
+        log('Added network ' + target.name + ' to MetaMask');
+        await connectWallet();
+      }catch(addErr){ console.error(addErr); alert('Failed to add network: '+addErr.message); }
+    } else {
+      console.error(switchError);
+      alert('Network switch failed: ' + switchError.message);
+    }
   }
-});
+}
 
-// init demo
-function initDemo(){ renderUser(); renderLog(); renderOrders(); }
-initDemo();
+async function approveSpender(){
+  if(!tokenContract) return alert('Token not loaded');
+  const spender = spenderEl.value.trim();
+  const amount = sendAmountEl.value.trim();
+  if(!spender) return alert('Enter spender address');
+  if(!amount) return alert('Enter amount to approve');
+  try{
+    const parsed = ethers.utils.parseUnits(amount, tokenDecimalsValue);
+    const tx = await tokenContract.approve(spender, parsed);
+    log('Approve tx sent: ' + tx.hash);
+    await tx.wait();
+    log('Approve confirmed');
+  }catch(err){ console.error(err); alert('Approve failed: '+(err && err.message)); }
+}
 
-// populate with sample data on first load
-(function seed(){ const db=load(); if(db.orders && db.orders.length) return; db.orders=[
-  {id:uid('ord'),type:'sell',currency:'USDT',amount:120,price:1.01,notes:'Telebirr +2519xxxx — bank transfer accepted',owner:'alice@example.com',created:now(),status:'open',messages:[]},
-  {id:uid('ord'),type:'buy',currency:'Laam',amount:300,price:0.05,notes:'CBE Birr transfer preferred',owner:'mohamed@example.com',created:now(),status:'open',messages:[]}
-]; db.logs=[{t:now(),m:'Welcome to Laam P2P demo — sample orders seeded'}]; save(db); renderOrders(); renderLog(); })();
+async function transferToken(){
+  if(!tokenContract) return alert('Token not loaded');
+  const to = toAddrEl.value.trim();
+  const amount = sendAmountEl.value.trim();
+  if(!to) return alert('Enter recipient address');
+  if(!amount) return alert('Enter amount');
+  try{
+    const parsed = ethers.utils.parseUnits(amount, tokenDecimalsValue);
+    // show gas estimate
+    const gasEstimate = await tokenContract.estimateGas.transfer(to, parsed);
+    const gasPrice = await provider.getGasPrice();
+    log(`Estimated gas: ${gasEstimate.toString()} @ gasPrice ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`);
+    const tx = await tokenContract.transfer(to, parsed);
+    log('Transfer tx sent: ' + tx.hash);
+    await tx.wait();
+    log('Transfer confirmed');
+    await loadBalances();
+  }catch(err){ console.error(err); alert('Transfer failed: '+(err && err.message)); }
+}
 
-  </script>
-</body>
-</html>
+// UI events
+btnConnect.addEventListener('click', async ()=>{ await connectWallet(); });
+btnRefresh.addEventListener('click', async ()=>{ await loadBalances(); });
+btnSwitchNet.addEventListener('click', async ()=>{ await switchNetwork(); });
+btnApprove.addEventListener('click', async ()=>{ await approveSpender(); });
+btnTransfer.addEventListener('click', async ()=>{ await transferToken(); });
+
+// Auto-detect changes from MetaMask
+if(window.ethereum){
+  window.ethereum.on('accountsChanged', (accounts)=>{ if(accounts.length) connectWallet(); else { userInfo.innerText='Not connected'; }});
+  window.ethereum.on('chainChanged', async (chainId)=>{ log('Chain changed: '+chainId); await connectWallet(); });
+}
+
+// initialize display
+(function init(){
+  networkName.innerText = CHAINS[NETWORK].name + ' (target)';
+  if(CONTRACT_ADDRESS) tokenAddr.innerText = CONTRACT_ADDRESS; else tokenAddr.innerText = 'Not set — edit file to set a token contract address for ' + CHAINS[NETWORK].name;
+  log('UI ready — network target: ' + NETWORK);
+})();
+</script></body>
+  </html>
